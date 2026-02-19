@@ -607,7 +607,9 @@ class ProgramPrintables(ProgramModuleObj):
         records = []
         tag_data = Tag.getProgramTag('teacher_reg_records', prog)
         if tag_data:
-            records = [x.strip().lower() for x in tag_data.split(',') if RecordType.objects.filter(name = x.strip().lower()).exists()]
+            candidate_names = [x.strip().lower() for x in tag_data.split(',')]
+            valid_names = set(RecordType.objects.filter(name__in=candidate_names).values_list('name', flat=True))
+            records = [name for name in candidate_names if name in valid_names]
 
         for teacher in teachers:
             # get list of valid classes
@@ -1575,7 +1577,9 @@ class ProgramPrintables(ProgramModuleObj):
         records = []
         tag_data = Tag.getProgramTag('student_reg_records', prog)
         if tag_data:
-            records = [event for event in [x.strip().lower() for x in tag_data.split(',') if RecordType.objects.filter(name = x.strip().lower()).exists()] if event not in ['attended', 'med', 'liab']]
+            candidate_names = [x.strip().lower() for x in tag_data.split(',')]
+            valid_names = set(RecordType.objects.filter(name__in=candidate_names).values_list('name', flat=True))
+            records = [name for name in candidate_names if name in valid_names and name not in ('attended', 'med', 'liab')]
         studentList = []
         for student in students:
             finaid_status = 'None'
