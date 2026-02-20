@@ -8,7 +8,7 @@ from copy import deepcopy
 from esp.cal.models import *
 from datetime import date
 from esp.utils.web import render_to_response
-from esp.users.models import ESPUser
+from esp.users.models import ESPUser, UserAvailability
 from esp.tagdict.models import Tag
 from esp.cal.models import Event
 
@@ -559,12 +559,31 @@ class SchedulingCheckRunner:
         return self.formatter.format_table(self.l_wrong_classroom_type, {"headings": ["Section", "Requested Type", "Classroom", "First Hour"]})
 
     def teachers_unavailable(self):
+        #   Bulk-fetch all teacher availability for this program in one query,
+        #   instead of calling getAvailableTimes() per teacher per section.
+        from collections import defaultdict
+        has_availability = self.p.hasModule('AvailabilityModule')
+        if has_availability:
+            et = EventType.get_from_desc('Class Time Block')
+            avail_qs = UserAvailability.objects.filter(
+                event__program=self.p,
+                event__event_type=et,
+            ).values_list('user_id', 'event_id')
+            avail_lookup = defaultdict(set)
+            for user_id, event_id in avail_qs:
+                avail_lookup[user_id].add(event_id)
+        else:
+            all_timeslot_ids = set(self.p.getTimeSlots().values_list('id', flat=True))
+
         l = []
         for s in self._all_class_sections():
             for t in s.teachers:
-                available = t.getAvailableTimes(s.parent_program, ignore_classes=True, ignore_moderation=True)
+                if has_availability:
+                    available_ids = avail_lookup.get(t.id, set())
+                else:
+                    available_ids = all_timeslot_ids
                 for e in s.get_meeting_times():
-                    if e not in available:
+                    if e.id not in available_ids:
                         l.append({"Teacher": t, "Time": e, "Section": s})
         return self.formatter.format_table(l, {"headings": ["Section", "Teacher", "Time"]})
 
@@ -702,11 +721,29 @@ class SchedulingCheckRunner:
         """
         Moderators who are moderating at a time at which they are not available.
         """
+        #   Bulk-fetch all moderator availability for this program in one query.
+        from collections import defaultdict
+        has_availability = self.p.hasModule('AvailabilityModule')
+        if has_availability:
+            et = EventType.get_from_desc('Class Time Block')
+            avail_qs = UserAvailability.objects.filter(
+                event__program=self.p,
+                event__event_type=et,
+            ).values_list('user_id', 'event_id')
+            avail_lookup = defaultdict(set)
+            for user_id, event_id in avail_qs:
+                avail_lookup[user_id].add(event_id)
+        else:
+            all_timeslot_ids = set(self.p.getTimeSlots().values_list('id', flat=True))
+
         l = []
         for s in self._all_class_sections():
             for m in s.get_moderators():
-                available = m.getAvailableTimes(s.parent_program, ignore_classes=True, ignore_moderation=True)
+                if has_availability:
+                    available_ids = avail_lookup.get(m.id, set())
+                else:
+                    available_ids = all_timeslot_ids
                 for e in s.get_meeting_times():
-                    if e not in available:
+                    if e.id not in available_ids:
                         l.append({self.p.getModeratorTitle(): m, "Time": e, "Section": s})
         return self.formatter.format_table(l, {"headings": ["Section", self.p.getModeratorTitle(), "Time"]})
