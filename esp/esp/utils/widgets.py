@@ -1,4 +1,4 @@
-#   Downloaded from http://www.djangosnippets.org/snippets/391/
+#   Downloaded from https://djangosnippets.org/snippets/391/
 #   Modified to not force unicode
 #   - Michael P
 

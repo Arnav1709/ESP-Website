@@ -15,7 +15,7 @@ from esp.tagdict import all_global_tags, all_program_tags
 # aseering 3/23/2010
 # This model is based on the sample "TaggedItem" model from the Django
 # documentation, as described at
-# http://www.djangoproject.com/documentation/models/generic_relations/
+# https://docs.djangoproject.com/en/stable/ref/contrib/contenttypes/
 
 @python_2_unicode_compatible
 class Tag(models.Model):

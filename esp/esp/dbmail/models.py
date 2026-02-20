@@ -640,7 +640,7 @@ class PlainRedirect(models.Model):
         ordering=('original',)
 
 
-# Adapted from http://www.djangosnippets.org/snippets/735/
+# Adapted from https://djangosnippets.org/snippets/735/
 class CustomSMTPBackend(SMTPEmailBackend):
     """ Simple override of Django's default backend to allow a Return-Path to be specified """
 

@@ -138,7 +138,7 @@ class ThemesTest(TestCase):
                         'show_email': 'True',
                         'show_group_name': 'True',
                         'front_page_style': 'bubblesfront.html',
-                        'facebook_link': 'http://somehost.net',
+                        'facebook_link': 'https://somehost.net',
                         'faq_link': '/faq.html',
                         'nav_structure': '[{"header": "header", "header_link": "/header_link/", "links": [{"link": "link1", "text": "text1"}]}]',
                         'contact_links': '[{"link": "link1", "text": "text1"}]',
