@@ -1,35 +1,31 @@
 ## Description
 
-<!-- Provide a brief summary of your changes and the motivation behind them. -->
+<!-- Briefly describe the changes introduced in this PR. -->
 
 ## Related Issue
 
-<!-- Link the issue this PR addresses, e.g. Closes #123 -->
+<!-- Link the relevant issue. Use "Closes #123" to auto-close on merge. -->
+
+Closes #
 
 ## Type of Change
 
-<!-- Check the relevant option(s): -->
-
-- [ ] Bug fix (non-breaking change that fixes an issue)
-- [ ] New feature (non-breaking change that adds functionality)
-- [ ] Breaking change (fix or feature that would cause existing functionality to not work as expected)
+- [ ] Bug fix
+- [ ] New feature
+- [ ] Breaking change
 - [ ] Documentation update
-- [ ] Refactoring / code cleanup
-- [ ] CI/CD or build configuration change
+- [ ] Refactor or cleanup
+- [ ] CI/CD or build configuration
+- [ ] Test update
 
-## How Has This Been Tested?
+## Testing
 
-<!-- Describe the tests you ran to verify your changes. Provide instructions so reviewers can reproduce. -->
+- [ ] Existing tests pass
+- [ ] New tests added (if applicable)
+- [ ] Manually verified
 
 ## Checklist
 
-- [ ] My code follows the project's coding style
-- [ ] I have performed a self-review of my code
-- [ ] I have added comments where necessary
-- [ ] I have updated documentation if needed
-- [ ] My changes do not generate any new warnings
-- [ ] Any dependent changes have been merged and published
-
-## Screenshots (if applicable)
-
-<!-- Add screenshots to help explain your changes, especially for UI updates. -->
+- [ ] Self-reviewed the code
+- [ ] Updated documentation (if needed)
+- [ ] No new warnings or errors introduced
