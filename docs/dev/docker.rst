@@ -7,9 +7,8 @@ Introduction
 ------------
 
 Follow the steps below to quickly set up a local development server using Docker.
-Unlike the Vagrant-based setup, this approach requires **only Docker and Docker Compose**
-to be installed — no VirtualBox, Vagrant, Fabric, or specific Python versions needed on
-your host machine.
+This approach requires **only Docker and Docker Compose** to be installed — no
+other host dependencies or specific Python versions needed.
 
 The Docker setup runs three containers:
 
@@ -141,8 +140,6 @@ customize settings:
 2. Or edit ``esp/esp/local_settings.py.docker`` to change the defaults for all
    Docker users
 
-Key differences from the Vagrant ``local_settings.py``:
-
 - ``DATABASES['default']['HOST']`` is ``'db'`` (the Docker service name) instead of
   ``'localhost'``
 - ``CACHES['default']['LOCATION']`` is ``'memcached:11211'`` instead of
@@ -179,30 +176,3 @@ Troubleshooting
 
        docker-compose down -v
        docker-compose up --build
-
-Differences from Vagrant Setup
--------------------------------
-
-+---------------------------+----------------------------+----------------------------+
-| Aspect                    | Vagrant                    | Docker                     |
-+===========================+============================+============================+
-| Requirements              | VirtualBox, Vagrant,       | Docker, Docker Compose     |
-|                           | Python 2/3, Fabric v1      |                            |
-+---------------------------+----------------------------+----------------------------+
-| First-time setup          | ``vagrant up && fab setup``| ``docker-compose up``      |
-+---------------------------+----------------------------+----------------------------+
-| Start server              | ``vagrant up &&            | ``docker-compose up``      |
-|                           | fab runserver``            |                            |
-+---------------------------+----------------------------+----------------------------+
-| Run manage.py             | ``fab manage:<cmd>``       | ``docker-compose exec web  |
-|                           |                            | python esp/manage.py``     |
-+---------------------------+----------------------------+----------------------------+
-| SSH into environment      | ``vagrant ssh``            | ``docker-compose exec      |
-|                           |                            | web bash``                 |
-+---------------------------+----------------------------+----------------------------+
-| Shut down                 | ``vagrant halt``           | ``docker-compose down``    |
-+---------------------------+----------------------------+----------------------------+
-| Encrypted partition       | Required                   | Not needed                 |
-+---------------------------+----------------------------+----------------------------+
-| Apple Silicon support     | Requires special VM box    | Works natively             |
-+---------------------------+----------------------------+----------------------------+
