@@ -12,7 +12,7 @@ The fastest way to get a local development server running:
 ```bash
 git clone https://github.com/learning-unlimited/ESP-Website.git devsite
 cd devsite
-docker-compose up --build
+docker compose up --build
 ```
 
 Then visit http://localhost:8000. See the [Docker setup guide](/docs/dev/docker.rst) for full details.

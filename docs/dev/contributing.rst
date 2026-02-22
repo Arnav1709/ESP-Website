@@ -31,8 +31,8 @@ From the directory ``/esp``: ::
 
   git checkout main  # for historical reasons we use 'main' instead of 'master'
   git pull
-  ./update_deps.sh # if using Docker: docker-compose up --build; no need to bother if deps haven’t changed
-  ./manage.py update # if using Docker: docker-compose exec web python esp/manage.py update
+  ./update_deps.sh # if using Docker: docker compose up --build; no need to bother if deps haven’t changed
+  ./manage.py update # if using Docker: docker compose exec web python esp/manage.py update
   git checkout -b new-branch-name
 
 Write some code!

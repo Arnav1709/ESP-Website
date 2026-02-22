@@ -46,7 +46,7 @@ Quick Start
 
 2. Build and start all services::
 
-    docker-compose up --build
+    docker compose up --build
 
    The first build will take several minutes as it installs system and Python
    dependencies. Subsequent starts will be much faster due to Docker layer caching.
@@ -64,50 +64,50 @@ Quick Start
 
 5. To create an admin account, open a new terminal and run::
 
-    docker-compose exec web python esp/manage.py createsuperuser
+    docker compose exec web python esp/manage.py createsuperuser
 
 Stopping & Starting
 --------------------
 
 To stop the containers::
 
-    docker-compose down
+    docker compose down
 
 To stop and **delete the database** (fresh start)::
 
-    docker-compose down -v
+    docker compose down -v
 
 To start again (no rebuild needed unless you changed the Dockerfile)::
 
-    docker-compose up
+    docker compose up
 
 To rebuild after changing the Dockerfile or requirements.txt::
 
-    docker-compose up --build
+    docker compose up --build
 
 Common Commands
 ---------------
 
 Run any ``manage.py`` command::
 
-    docker-compose exec web python esp/manage.py <command>
+    docker compose exec web python esp/manage.py <command>
 
 Examples::
 
     # Open a Django shell
-    docker-compose exec web python esp/manage.py shell_plus
+    docker compose exec web python esp/manage.py shell_plus
 
     # Run migrations
-    docker-compose exec web python esp/manage.py migrate
+    docker compose exec web python esp/manage.py migrate
 
     # Run tests
-    docker-compose exec web python esp/manage.py test
+    docker compose exec web python esp/manage.py test
 
     # Open a bash shell inside the container
-    docker-compose exec web bash
+    docker compose exec web bash
 
     # Connect to the PostgreSQL database
-    docker-compose exec db psql -U esp devsite_django
+    docker compose exec db psql -U esp devsite_django
 
 Loading a Database Dump
 -----------------------
@@ -115,19 +115,19 @@ Loading a Database Dump
 If you have a database dump file, you can load it like so::
 
     # First, copy the dump into the db container
-    docker cp /path/to/dump.sql $(docker-compose ps -q db):/tmp/dump.sql
+    docker cp /path/to/dump.sql $(docker compose ps -q db):/tmp/dump.sql
 
     # Then load it
-    docker-compose exec db psql -U esp devsite_django -f /tmp/dump.sql
+    docker compose exec db psql -U esp devsite_django -f /tmp/dump.sql
 
 To load a Postgres custom-format dump::
 
-    docker-compose exec db pg_restore --verbose --dbname=devsite_django \
+    docker compose exec db pg_restore --verbose --dbname=devsite_django \
         --no-owner --no-acl -U esp /tmp/dump.sql
 
 After loading, re-run migrations to ensure the schema is up to date::
 
-    docker-compose exec web python esp/manage.py migrate
+    docker compose exec web python esp/manage.py migrate
 
 Configuration
 -------------
@@ -152,7 +152,7 @@ Troubleshooting
 1. **Port already in use**
 
    If port 8000 (or 5432 or 11211) is in use, either stop the conflicting service
-   or change the port mapping in ``docker-compose.yml``, e.g.::
+   or change the port mapping in ``docker compose.yml``, e.g.::
 
        ports:
          - "9000:8000"
@@ -162,7 +162,7 @@ Troubleshooting
    The entrypoint script waits for PostgreSQL to be ready, but if you still see
    connection errors, try::
 
-       docker-compose restart web
+       docker compose restart web
 
 3. **Permission issues with mounted volumes**
 
@@ -174,5 +174,5 @@ Troubleshooting
 
    If things seem broken after a ``git pull``, try a clean rebuild::
 
-       docker-compose down -v
-       docker-compose up --build
+       docker compose down -v
+       docker compose up --build
