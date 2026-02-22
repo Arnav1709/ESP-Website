@@ -9,7 +9,6 @@ on:
       - 'LICENSE'
       - '.gitattributes'
       - '.gitignore'
-      - 'Vagrantfile'
   pull_request:
     branches: [main]
     paths-ignore:
@@ -18,7 +17,6 @@ on:
       - 'LICENSE'
       - '.gitattributes'
       - '.gitignore'
-      - 'Vagrantfile'
   workflow_dispatch:
 
 concurrency:
