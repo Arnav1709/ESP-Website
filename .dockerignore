@@ -1,0 +1,15 @@
+.git
+.github
+.vagrant
+.venv
+env
+__pycache__
+*.pyc
+*.pyo
+node_modules
+*.egg-info
+dist
+build
+*.box
+deploy/vagrant_boxes
+docs
