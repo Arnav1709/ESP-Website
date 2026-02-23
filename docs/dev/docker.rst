@@ -22,11 +22,16 @@ preferred editor on your host machine and see changes reflected immediately.
 Prerequisites
 -------------
 
-Install the following on your system:
+**Windows and macOS:**
 
-* `Docker Engine <https://docs.docker.com/engine/install/>`_ (or Docker Desktop)
-* `Docker Compose <https://docs.docker.com/compose/install/>`_ (included with Docker Desktop;
-  on Linux you may need to install it separately)
+Install `Docker Desktop <https://docs.docker.com/desktop/>`_, which includes
+Docker Engine and Docker Compose in a single installer.
+
+**Linux:**
+
+Install `Docker Engine <https://docs.docker.com/engine/install/>`_ and the
+`Docker Compose plugin <https://docs.docker.com/compose/install/linux/>`_
+separately (or install Docker Desktop for Linux if you prefer a GUI).
 
 That's it! No Python, Node.js, PostgreSQL, or any other dependency needs to be
 installed on your host machine.
@@ -51,13 +56,18 @@ Quick Start
    The first build will take several minutes as it installs system and Python
    dependencies. Subsequent starts will be much faster due to Docker layer caching.
 
-3. The entrypoint script will automatically:
+3. The entrypoint script will automatically (on first run):
 
    - Create ``local_settings.py`` from the Docker template (if it doesn't exist)
    - Create media symlinks (``images``, ``styles``)
    - Wait for PostgreSQL to be ready
    - Run database migrations
    - Collect static files
+
+   On subsequent runs, migrations and static file collection are skipped for
+   faster startup. To force them to run again (e.g., after pulling new code)::
+
+    FORCE_SETUP=1 docker compose up
 
 4. Once you see ``Starting development server at http://0.0.0.0:8000/``,
    open your browser and navigate to http://localhost:8000.
@@ -83,7 +93,12 @@ To start again (no rebuild needed unless you changed the Dockerfile)::
 
 To rebuild after changing the Dockerfile or requirements.txt::
 
+    docker compose down
     docker compose up --build
+
+.. note::
+   Always run ``docker compose down`` before ``docker compose up --build`` to
+   avoid build errors caused by symlinks in the mounted volume.
 
 Common Commands
 ---------------
@@ -112,22 +127,50 @@ Examples::
 Loading a Database Dump
 -----------------------
 
-If you have a database dump file, you can load it like so::
+If you have an existing database dump (e.g., from a previous development setup),
+you can load it into the Docker environment.
 
-    # First, copy the dump into the db container
+**Step 1: Start with a clean database** by removing the existing volume and
+bringing the containers back up::
+
+    docker compose down -v
+    docker compose up
+
+   Wait a few seconds for PostgreSQL to initialize, then proceed.
+
+**Step 2: Copy the dump into the container.**
+
+On Linux / macOS / WSL::
+
     docker cp /path/to/dump.sql $(docker compose ps -q db):/tmp/dump.sql
 
-    # Then load it
+On Windows PowerShell, run the two commands separately::
+
+    # First, get the container ID
+    docker compose ps -q db
+    # Then copy, replacing <container-id> with the output above
+    docker cp C:\path\to\dump.sql <container-id>:/tmp/dump.sql
+
+**Step 3: Load the dump.**
+
+For a plain SQL dump (``.sql`` file)::
+
     docker compose exec db psql -U esp devsite_django -f /tmp/dump.sql
 
-To load a Postgres custom-format dump::
+For a custom-format dump (created with ``pg_dump -Fc``)::
 
     docker compose exec db pg_restore --verbose --dbname=devsite_django \
         --no-owner --no-acl -U esp /tmp/dump.sql
 
-After loading, re-run migrations to ensure the schema is up to date::
+**Step 4: Re-run migrations** to ensure the schema matches the current code::
 
     docker compose exec web python esp/manage.py migrate
+
+.. note::
+   If you see ownership or permission errors when loading a dump from a different
+   environment, the ``--no-owner --no-acl`` flags on ``pg_restore`` will
+   ignore those. For plain SQL dumps, you can safely ignore ``ALTER OWNER``
+   errors — the data will still load correctly.
 
 Configuration
 -------------
@@ -152,7 +195,7 @@ Troubleshooting
 1. **Port already in use**
 
    If port 8000 (or 5432 or 11211) is in use, either stop the conflicting service
-   or change the port mapping in ``docker compose.yml``, e.g.::
+   or change the port mapping in ``docker-compose.yml``, e.g.::
 
        ports:
          - "9000:8000"
@@ -175,4 +218,13 @@ Troubleshooting
    If things seem broken after a ``git pull``, try a clean rebuild::
 
        docker compose down -v
+       FORCE_SETUP=1 docker compose up --build
+
+5. **Build fails with "invalid file request"**
+
+   If you see an error like ``invalid file request esp/public/media/images``
+   during ``docker compose build``, run ``docker compose down`` first to remove
+   the symlinks created by the entrypoint, then rebuild::
+
+       docker compose down
        docker compose up --build
