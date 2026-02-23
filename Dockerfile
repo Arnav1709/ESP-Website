@@ -10,30 +10,10 @@ ENV VIRTUAL_ENV=/usr
 # Set the working directory
 WORKDIR /app
 
-# Install system dependencies (adapted from esp/packages_base.txt for Debian)
+# Install system dependencies from packages_base.txt to avoid duplication.
+COPY esp/packages_base.txt /tmp/packages_base.txt
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    build-essential \
-    npm \
-    texlive \
-    texlive-latex-extra \
-    imagemagick \
-    dvipng \
-    postgresql-client \
-    libevent-dev \
-    zlib1g-dev \
-    inkscape \
-    wamerican-large \
-    wget \
-    memcached \
-    libmemcached-dev \
-    libpq-dev \
-    libcurl4-openssl-dev \
-    libssl-dev \
-    libjpeg-dev \
-    javascript-common \
-    git \
-    libfreetype6-dev \
-    curl \
+    $(cat /tmp/packages_base.txt | grep -v '^python' | grep -v '^#' | tr '\n' ' ') \
     && rm -rf /var/lib/apt/lists/*
 
 # Install LESS via npm (from packages_base_manual_install.sh)
@@ -58,4 +38,4 @@ RUN sed -i 's/\r$//' /app/docker-entrypoint.sh && \
 EXPOSE 8000
 
 ENTRYPOINT ["/app/docker-entrypoint.sh"]
-CMD ["python", "esp/manage.py", "runserver", "0.0.0.0:8000"]
+CMD ["python", "manage.py", "runserver_plus", "0.0.0.0:8000"]

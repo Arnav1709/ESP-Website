@@ -29,14 +29,17 @@ except psycopg2.OperationalError:
 done
 echo ">>> PostgreSQL is ready!"
 
-# Run migrations
+# Run migrations (use absolute paths to avoid working directory issues)
 echo ">>> Running migrations..."
-cd /app/esp
-python manage.py migrate --noinput
+python /app/esp/manage.py migrate --noinput
 
 # Collect static files
 echo ">>> Collecting static files..."
-python manage.py collectstatic --noinput -v 0
+python /app/esp/manage.py collectstatic --noinput -v 0
+
+# Change to the esp directory before starting the server
+# This ensures manage.py resolves Django settings correctly
+cd /app/esp
 
 echo ">>> Starting server..."
 exec "$@"
