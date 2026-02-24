@@ -57,13 +57,16 @@ def merge(absorber, absorbee):
         try:
             with transaction.atomic():
                 if m2m:
-                    # TODO: handle symmetric relations.
                     rel = getattr(obj, name)
-                    # If it's not auto_created then it's handled by a "through".
                     if rel.through._meta.auto_created:
-                        rel.remove(absorbee)
-                        rel.add(absorber)
-                        # No need to save(); remove and add implicitly do it.
+                        # For symmetric relations (e.g., "friends"), skip
+                        # self-referential additions that would occur when the
+                        # related object is the absorber itself.
+                        if obj.pk == absorber.pk:
+                            rel.remove(absorbee)
+                        else:
+                            rel.remove(absorbee)
+                            rel.add(absorber)
                 else:
                     setattr(obj, name, absorber)
                     obj.save()
@@ -73,9 +76,16 @@ def merge(absorber, absorbee):
                 "skipping (likely duplicate constraint)",
                 obj.__class__.__name__, obj.pk, name, absorbee.pk, absorber.pk
             )
-    # Also check local m2m fields.
+    # Also transfer forward m2m relations (including symmetric).
     for field in absorber._meta.local_many_to_many:
-        getattr(absorber, field.attname).add(getattr(absorbee, field.attname).all())
+        absorbee_related = getattr(absorbee, field.attname)
+        absorber_related = getattr(absorber, field.attname)
+        related_objects = absorbee_related.all()
+        # For symmetric self-referential fields, exclude the absorber
+        # to prevent a user being related to themselves after merge.
+        if field.related_model == type(absorber):
+            related_objects = related_objects.exclude(pk=absorber.pk)
+        absorber_related.add(*related_objects)
 
 
 #########################
