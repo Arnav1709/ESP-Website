@@ -228,3 +228,24 @@ Troubleshooting
 
        docker compose down
        docker compose up --build
+
+6. **Docker Desktop is not running (Windows / macOS)**
+
+   *Windows error:* ``unable to get image … open //./pipe/dockerDesktopLinuxEngine:
+   The system cannot find the file specified.``
+
+   *macOS error:* ``Cannot connect to the Docker daemon at
+   unix:///var/run/docker.sock. Is the docker daemon running?``
+
+   Both errors mean Docker Desktop is not running. Open **Docker Desktop** and
+   wait until the icon in the system tray (Windows) or menu bar (macOS) shows
+   it is ready. You can verify by running::
+
+       docker info
+
+   If this returns engine details without errors, retry
+   ``docker compose up --build``.
+
+   *Windows only:* if the issue persists, open
+   **Docker Desktop → Settings → General** and ensure
+   **"Use the WSL 2 based engine"** is checked, then click **Apply & Restart**.
