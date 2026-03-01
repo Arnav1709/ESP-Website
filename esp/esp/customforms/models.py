@@ -22,7 +22,7 @@ class Form(models.Model):
     success_url = models.CharField(max_length=200, blank=True)
 
     def __str__(self):
-        return '%s (created by %s)' % (self.title, self.created_by.username)
+        return f'{self.title} (created by {self.created_by.username})'
 
 @python_2_unicode_compatible
 class Page(models.Model):
@@ -30,7 +30,7 @@ class Page(models.Model):
     seq = models.IntegerField(default=-1)
 
     def __str__(self):
-        return 'Page %d of %s' % (self.seq, self.form.title)
+        return f'Page {self.seq} of {self.form.title}'
 
 @python_2_unicode_compatible
 class Section(models.Model):
@@ -40,7 +40,7 @@ class Section(models.Model):
     seq = models.IntegerField()
 
     def __str__(self):
-        return 'Sec. %d: %s' % (self.seq, str(self.title))
+        return f'Sec. {self.seq}: {self.title}'
 
 @python_2_unicode_compatible
 class Field(models.Model):
@@ -53,7 +53,7 @@ class Field(models.Model):
     required = models.BooleanField(default=False)
 
     def __str__(self):
-        return '%s' % (self.label)
+        return f'{self.label}'
 
     def set_attribute(self, atype, value):
         from esp.customforms.models import Attribute
