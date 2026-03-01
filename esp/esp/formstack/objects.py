@@ -44,10 +44,10 @@ class FormstackForm(object):
 
 
     def __str__(self):
-        return '{0}'.format(self.id)
+        return str(self.id)
 
     def __repr__(self):
-        return '<FormstackForm: {0}>'.format(self)
+        return f'<FormstackForm: {self}>'
 
     @cache_function
     def info(self):
@@ -109,7 +109,7 @@ class FormstackSubmission(object):
         return str(self.id)
 
     def __repr__(self):
-        return '<FormstackSubmission: {0}>'.format(self)
+        return f'<FormstackSubmission: {self}>'
 
     @cache_function
     def data(self):
