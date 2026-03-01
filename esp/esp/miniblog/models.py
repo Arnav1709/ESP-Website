@@ -51,7 +51,7 @@ class AnnouncementLink(models.Model):
     href = models.URLField(help_text="The URL the link should point to.")
 
     def __str__(self):
-        return "%s (links to %s)" % (self.title, self.href)
+        return f"{self.title} (links to {self.href})"
 
     def get_absolute_url(self):
         return self.href
@@ -61,10 +61,10 @@ class AnnouncementLink(models.Model):
         return self.title
 
     def content(self):
-        return '<a href="%s">Click Here</a> for details' % self.href
+        return f'<a href="{self.href}">Click Here</a> for details'
 
     def html(self):
-        return '<p><a href="%s">%s</a></p>' % (self.href, self.title)
+        return f'<p><a href="{self.href}">{self.title}</a></p>'
 
 @python_2_unicode_compatible
 class Entry(models.Model):
@@ -88,9 +88,9 @@ class Entry(models.Model):
 
     def __str__(self):
         if self.slug:
-            return "%s" % (self.slug,)
+            return str(self.slug)
         else:
-            return "%s" % (self.title,)
+            return str(self.title)
 
     def html(self):
         return markdown(self.content)
@@ -116,8 +116,7 @@ class Comment(models.Model):
     content = models.TextField(help_text="HTML not allowed.")
 
     def __str__(self):
-        return 'Comment for %s by %s on %s' % (self.entry, self.author,
-                                               self.post_ts.date())
+        return f'Comment for {self.entry} by {self.author} on {self.post_ts.date()}'
 
     class Meta:
         ordering = ['-post_ts']
